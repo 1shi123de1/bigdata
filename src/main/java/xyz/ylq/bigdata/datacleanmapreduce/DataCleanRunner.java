@@ -39,8 +39,8 @@ public class DataCleanRunner implements Tool{
 	}
 
 	public int run(String[] args) throws Exception {
+
 		conf = this.getConf();
-		//conf.set("mapreduce.framework.name","local");
 		conf.set("inpath",args[0]);
 		conf.set("outpath",args[1]);
 		
@@ -64,7 +64,6 @@ public class DataCleanRunner implements Tool{
 		Configuration conf = job.getConfiguration();
 		String outPathString = conf.get("outpath");
 		
-		//FileSystem fSystem = FileSystem.get(conf);
 		FileSystem fSystem = FileSystem.get(new URI("hdfs://172.16.13.146:8020"), conf);
 		
 		Path outPath = new Path(outPathString);
@@ -89,7 +88,10 @@ public class DataCleanRunner implements Tool{
 	}
 	
 	public static void main(String[] args) {
-		
+		if(args == null ||args.length<2){
+			System.out.println("parameter length error!!");
+			return;
+		}
 		try{
 			int resultCode = ToolRunner.run(new DataCleanRunner(), args);
 			if(resultCode == 0){

@@ -12,6 +12,12 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 public class WordCountRunner {
 
 	public static void main(String[] args) throws Exception {
+		// 参数长度判断
+		if(args == null ||args.length<2){
+			System.out.println("parameter length error!!");
+			return;
+		}
+		Path outPath = new Path(args[args.length-1]);
 		Configuration conf = new Configuration();
 		Job job = Job.getInstance(conf, "WordCountRunner");
 		job.setJarByClass(xyz.ylq.bigdata.datacleanmapreduce.WordCountRunner.class);
@@ -36,8 +42,13 @@ public class WordCountRunner {
 		job.setOutputValueClass(IntWritable.class);
 
 		// TODO: specify input and output DIRECTORIES (not files)
-		FileInputFormat.setInputPaths(job, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		// 多个input目录
+		for(int i = 0; i < args.length-1; i++){
+			FileInputFormat.addInputPath(job, new Path(args[i]));
+		}
+		// 删除output Path目录
+		outPath.getFileSystem(conf).delete(outPath, true);
+		FileOutputFormat.setOutputPath(job, outPath);
 
 		System.exit(job.waitForCompletion(true)?0:1);
 	}
