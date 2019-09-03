@@ -3,6 +3,8 @@ package xyz.ylq.bigdata.hbase;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -12,11 +14,16 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Delete;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
-public class hbaseDDL {
+public class hbaseCURD {
 
 	private static Connection connection = null;
 	private static Admin admin = null;
@@ -116,6 +123,68 @@ public class hbaseDDL {
 		table.close();
 	}
 	
+	// 6.获取数据
+	public static void getData(String tableName,String rowKey,String cf,String qualifier) throws IOException {
+		if(!isTableExist(tableName)){
+			System.out.println(tableName+" no exists!");
+			return;
+		}
+		Table table = connection.getTable(TableName.valueOf(tableName));
+		
+		Get get = new Get(Bytes.toBytes(rowKey));
+		//指定列族
+//		get.addFamily(Bytes.toBytes(cf));
+		//指定列
+//		get.addColumn(Bytes.toBytes(cf), Bytes.toBytes(qualifier));
+		//指定最大版本
+//		get.setMaxVersions();
+		Result result = table.get(get);
+		
+		for(Cell cell : result.rawCells()){
+			System.out.println("ColumnFamily:"+Bytes.toString(CellUtil.cloneFamily(cell))+
+							   ",Qualifier:"+Bytes.toString(CellUtil.cloneQualifier(cell))+
+							   ",Value:"+Bytes.toString(CellUtil.cloneValue(cell)));
+		}
+		
+		table.close();
+	}
+	
+	// 7. scan方式获取数据 
+	public static void scanTable(String tableName) throws IOException{
+		if(!isTableExist(tableName)){
+			System.out.println(tableName+" no exists!");
+			return;
+		}
+		Table table = connection.getTable(TableName.valueOf(tableName));
+		
+		Scan scan = new Scan();
+		ResultScanner resultScanner = table.getScanner(scan);
+		
+		for(Result result : resultScanner){
+			for(Cell cell : result.rawCells()){
+				System.out.println("rowKey:"+Bytes.toString(CellUtil.cloneRow(cell))+
+								   ",ColumnFamily:"+Bytes.toString(CellUtil.cloneFamily(cell))+
+								   ",Qualifier:"+Bytes.toString(CellUtil.cloneQualifier(cell))+
+								   ",Value:"+Bytes.toString(CellUtil.cloneValue(cell))
+								   );
+			}
+		}
+	}
+	
+	// 8.删除数据
+	public static void deleteData(String tableName,String rowKey,String cf,String qualifier) throws IOException{
+		Table table = connection.getTable(TableName.valueOf(tableName));
+		
+		Delete delete = new Delete(Bytes.toBytes(rowKey));
+		
+		// 慎用delete.addColumn(cf,qualifier)方法，可能会出现 删除一个数据后出现上一个版本的数据 问题
+		// 删除可以只指定列族或者只指定rowKey
+		delete.addColumns(Bytes.toBytes(cf), Bytes.toBytes(qualifier));
+		
+		table.delete(delete);
+		table.close();
+	}
+	
 	public static void main(String[] args) throws IOException {
 //		System.out.println(isTableExist("test"));
 //		
@@ -123,8 +192,9 @@ public class hbaseDDL {
 //		
 //		dropTable("test");
 //		System.out.println(isTableExist("test"));
-		createNameSpace("ylq");
-		createTable("ylq:testTable", "info");
+//		createNameSpace("ylq");
+//		createTable("ylq:testTable", "info");
+		scanTable("ylq:testTable2");
 		close();
 	}
 
