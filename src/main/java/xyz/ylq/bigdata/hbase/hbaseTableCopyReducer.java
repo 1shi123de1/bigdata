@@ -12,7 +12,7 @@ import org.apache.hadoop.io.NullWritable;
  * Mapper中可以只过滤需要的数据
  * reducer 只负责写出
  */
-public class hFruitReducer2 extends TableReducer<ImmutableBytesWritable, Put, NullWritable>{
+public class hbaseTableCopyReducer extends TableReducer<ImmutableBytesWritable, Put, NullWritable>{
 
 	@Override
 	protected void reduce(ImmutableBytesWritable key, Iterable<Put> value,Context context)

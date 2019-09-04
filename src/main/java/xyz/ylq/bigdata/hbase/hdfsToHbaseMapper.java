@@ -10,7 +10,7 @@ import org.apache.hadoop.mapreduce.Mapper;
  * mapper
  * 把hdfs文件系统上的文件加载到hbase表中
  */
-public class hFruitMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
+public class hdfsToHbaseMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
 
 	@Override
 	protected void map(LongWritable key, Text value, Context context)

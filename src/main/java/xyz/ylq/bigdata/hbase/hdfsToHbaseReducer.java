@@ -15,7 +15,7 @@ import org.apache.hadoop.io.Text;
  * 把hdfs文件系统上的文件加载到hbase表中
  * 可以动态设置 列族和列名
  */
-public class hFruitReducer extends TableReducer<LongWritable, Text, NullWritable> {
+public class hdfsToHbaseReducer extends TableReducer<LongWritable, Text, NullWritable> {
 	String cf = null;
 	
 	// 这个方法可以设置全局的 属性

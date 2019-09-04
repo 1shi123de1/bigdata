@@ -15,7 +15,7 @@ import org.apache.hadoop.util.ToolRunner;
  * 第一个参数是文件所在路径
  * 第二个参数是表名
  */
-public class hFruitDriver implements Tool{
+public class hdfsToHbaseDriver implements Tool{
 	
 	private Configuration configuration = null;
 
@@ -31,15 +31,15 @@ public class hFruitDriver implements Tool{
 		Job job = Job.getInstance(configuration);
 		
 		// set driver class
-		job.setJarByClass(hFruitDriver.class);
+		job.setJarByClass(hdfsToHbaseDriver.class);
 		
 		// set mapper & input output 
-		job.setMapperClass(hFruitMapper.class);
+		job.setMapperClass(hdfsToHbaseMapper.class);
 		job.setMapOutputKeyClass(LongWritable.class);
 		job.setMapOutputValueClass(Text.class);
 		
 		// set reducer
-		TableMapReduceUtil.initTableReducerJob(args[1], hFruitReducer.class, job);
+		TableMapReduceUtil.initTableReducerJob(args[1], hdfsToHbaseReducer.class, job);
 		
 		// set input arg
 		FileInputFormat.setInputPaths(job, args[0]);
@@ -54,7 +54,7 @@ public class hFruitDriver implements Tool{
 		
 		try {
 			Configuration configuration = new Configuration();
-			int run = ToolRunner.run(configuration, new hFruitDriver(), args);
+			int run = ToolRunner.run(configuration, new hdfsToHbaseDriver(), args);
 			System.exit(run);
 		} catch (Exception e) {
 			e.printStackTrace();

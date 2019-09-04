@@ -14,7 +14,7 @@ import org.apache.hadoop.hbase.util.Bytes;
  * Mapper中可以只过滤需要的数据
  */
 		
-public class hFruitMapper2 extends TableMapper<ImmutableBytesWritable, Put>{
+public class hbaseToHbaseMapper extends TableMapper<ImmutableBytesWritable, Put>{
 
 	@Override
 	protected void map(ImmutableBytesWritable key, Result value,Context context)

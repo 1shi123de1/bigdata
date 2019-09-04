@@ -16,7 +16,7 @@ import org.apache.hadoop.util.ToolRunner;
  * 第一个参数是 复制的表名
  * 第二个参数是 写入的表名
  */
-public class hFruitDriver2 implements Tool{
+public class hbaseTableCopyDriver implements Tool{
 
 	// 定义配置信息
 	private Configuration configuration = null;
@@ -35,19 +35,19 @@ public class hFruitDriver2 implements Tool{
 		Job job = Job.getInstance(configuration);
 		
 		// 2.设置主类路径
-		job.setJarByClass(hFruitDriver2.class);
+		job.setJarByClass(hbaseTableCopyDriver.class);
 		
 		// 3.设置Mapper输出KV类型
 		TableMapReduceUtil.initTableMapperJob(args[0], 
 				new Scan(),
-				hFruitMapper2.class,
+				hbaseToHbaseMapper.class,
 				ImmutableBytesWritable.class,
 				Put.class, 
 				job);
 		
 		// 4.设置Reducer输出KV类型
 		TableMapReduceUtil.initTableReducerJob(args[1], 
-				hFruitReducer2.class, 
+				hbaseTableCopyReducer.class, 
 				job);
 		
 		// 5.提交任务
@@ -61,7 +61,7 @@ public class hFruitDriver2 implements Tool{
 			Configuration configuration = HBaseConfiguration.create();
 			// 打jar包在集群上运行，可以把配置删掉
 //			configuration.set("hbase.zookeeper.quorum", "gwnet01,gwnet02,gwnet03");
-			ToolRunner.run(configuration, new hFruitDriver2(),args);
+			ToolRunner.run(configuration, new hbaseTableCopyDriver(),args);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
